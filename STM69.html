@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายงานการโอนเงินกองทุน UCS ปีงบประมาณ 2569 รพ.โพนทอง</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    
+    <!-- SheetJS for Excel Upload -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        /* CSS Reset & Variables */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        :root {
+            --primary: #0284c7; /* Blue 600 */
+            --secondary: #38bdf8; /* Blue 400 */
+            --bg-color: #f0f9ff; /* Sky 50 */
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.4);
+        }
+
+        body {
+            background: #ffffff;
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        /* Card Classes (Changed from Glassmorphism for white background) */
+        .glass-panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Dark Theme for Header & Footer */
+        .theme-dark-blue {
+            background: #075985; /* สีฟ้าโทนเข้ม */
+            color: #ffffff;
+            border: none;
+        }
+        .theme-dark-blue .header-title h1 {
+            color: #ffffff;
+        }
+        .theme-dark-blue .header-title p {
+            color: #e0f2fe;
+        }
+        .theme-dark-blue .status-indicator {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+        }
+        .theme-dark-blue .btn-outline {
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid #ffffff;
+        }
+        .theme-dark-blue .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .theme-dark-blue .btn-primary {
+            background: #ffffff;
+            color: #075985;
+        }
+        .theme-dark-blue .btn-primary:hover {
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        .footer-section {
+            background: #075985;
+            color: #ffffff;
+            text-align: center;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 400;
+            font-size: 15px;
+            margin-top: auto;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .header-title p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #0369a1;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: #f0f9ff;
+        }
+
+        .status-indicator {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fbbf24; /* Warning/Loading */
+        }
+        .status-dot.online { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.5); }
+        .status-dot.offline { background: #ef4444; }
+
+        /* Key Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .metric-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .icon-blue { background: #e0f2fe; color: #0284c7; }
+        .icon-cyan { background: #cffafe; color: #0891b2; }
+        .icon-indigo { background: #e0e7ff; color: #4f46e5; }
+        .icon-teal { background: #ccfbf1; color: #0d9488; }
+
+        .metric-info h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .metric-info p {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            padding: 16px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        select {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-family: 'Kanit', sans-serif;
+            font-size: 14px;
+            color: var(--text-dark);
+            outline: none;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.1); }
+
+        /* Main Content Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout { grid-template-columns: 1fr; }
+        }
+
+        /* Charts & Table */
+        .chart-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 350px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            min-height: 250px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .table-section {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 0;
+            min-height: 400px;
+        }
+        
+        .table-header-toolbar {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 800px;
+        }
+
+        th {
+            background: #f8fafc;
+            position: sticky;
+            top: 0;
+            padding: 12px 20px;
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-bottom: 2px solid #e2e8f0;
+            z-index: 2;
+        }
+
+        th.text-right, td.text-right { text-align: right; }
+
+        td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-dark);
+        }
+
+        tbody tr:hover { background: rgba(240, 249, 255, 0.8); }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 6px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .action-btn:hover.delete { color: white; background: #ef4444; }
+
+        /* File Input Hidden */
+        #excelUpload { display: none; }
+        
+        /* Modal for Loading/Processing */
+        #loaderModal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loaderModal">
+    <div class="spinner"></div>
+    <h3 id="loaderText" style="color: var(--primary); font-size: 18px;">กำลังประมวลผล...</h3>
+</div>
+
+<div class="dashboard-container">
+    
+    <!-- Header -->
+    <header class="glass-panel theme-dark-blue">
+        <div class="header-title">
+            <h1>รายงานการโอนเงินกองทุน UCS</h1>
+            <p style="display: flex; align-items: center; gap: 12px; margin-top: 4px;">
+                <span>ปีงบประมาณ 2569 | โรงพยาบาลโพนทอง</span>
+                <span id="lastUpdateTime" style="font-size: 12px; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 12px; color: #ffffff; font-weight: 500; border: 1px solid rgba(255,255,255,0.3);"><i class="fa-regular fa-clock"></i> อัปเดตล่าสุด: กำลังโหลด...</span>
+            </p>
+        </div>
+        <div class="header-actions">
+            <div class="status-indicator" id="syncStatus">
+                <div class="status-dot" id="syncDot"></div>
+                <span id="syncText">ข้อมูลเริ่มต้น (Offline)</span>
+            </div>
+            <button class="btn btn-outline" onclick="fetchLiveFromGAS()">
+                <i class="fa-solid fa-rotate"></i> ดึงข้อมูลล่าสุด
+            </button>
+            <label class="btn btn-primary" for="excelUpload">
+                <i class="fa-solid fa-file-excel"></i> นำเข้า Excel
+            </label>
+            <input type="file" id="excelUpload" accept=".xlsx, .xls" onchange="handleExcelUpload(event)">
+        </div>
+    </header>
+
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+        <div class="glass-panel metric-card">
+            <div class="metric-icon icon-blue"><i class="fa-solid fa-money-bill-wave"></i></div>
+            <div class="metric-info">
+                <h3>ยอดชดเชยรวม (บาท)</h3>
+                <p id="kpi-total">0.00</p>
+            </div>
+        </div>
+        <div class="glass-panel metric-card">
+            <div class="metric-icon icon-cyan"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="metric-info">
+                <h3>จำนวนกองทุนแยกประเภท</h3>
+                <p id="kpi-main-fund">0</p>
+            </div>
+        </div>
+        <div class="glass-panel metric-card">
+            <div class="metric-icon icon-indigo"><i class="fa-solid fa-cubes"></i></div>
+            <div class="metric-info">
+                <h3>จำนวนกองทุนย่อย</h3>
+                <p id="kpi-sub-fund">0</p>
+            </div>
+        </div>
+        <div class="glass-panel metric-card">
+            <div class="metric-icon icon-teal"><i class="fa-solid fa-briefcase-medical"></i></div>
+            <div class="metric-info">
+                <h3>จำนวนโครงการย่อย</h3>
+                <p id="kpi-project">0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="glass-panel filters-section">
+        <div class="filter-group">
+            <label>กองทุนแยกประเภท</label>
+            <select id="filter-main" onchange="applyFilters()"><option value="all">ทั้งหมด</option></select>
+        </div>
+        <div class="filter-group">
+            <label>กองทุนย่อย</label>
+            <select id="filter-sub" onchange="applyFilters()"><option value="all">ทั้งหมด</option></select>
+        </div>
+        <div class="filter-group">
+            <label>โครงการย่อย</label>
+            <select id="filter-project" onchange="applyFilters()"><option value="all">ทั้งหมด</option></select>
+        </div>
+        <button class="btn btn-outline theme-dark-blue" style="padding: 10px 20px; height: 42px;" onclick="resetFilters()">
+            <i class="fa-solid fa-eraser"></i> ล้างค่า
+        </button>
+    </div>
+
+    <!-- Main Layout: Charts & Table -->
+    <div class="main-layout">
+        
+        <!-- Left: Donut Chart -->
+        <div class="glass-panel chart-container">
+            <div class="chart-title">สัดส่วนร้อยละ กองทุนแยกประเภท</div>
+            <div class="canvas-wrapper">
+                <canvas id="donutChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Right: Bar Chart & Table -->
+        <div class="right-column">
+            
+            <!-- Bar Chart -->
+            <div class="glass-panel chart-container" style="min-height: 280px;">
+                <div class="chart-title">ยอดชดเชยแยกตามกองทุนย่อย (Top 10)</div>
+                <div class="canvas-wrapper" style="min-height: 200px;">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="glass-panel table-section">
+                <div class="table-header-toolbar">
+                    <div class="chart-title" style="margin:0;"><i class="fa-solid fa-table-list" style="color: var(--primary); margin-right: 8px;"></i>รายละเอียดรายการ</div>
+                    <div style="font-size: 13px; color: var(--text-muted); background: white; padding: 4px 12px; border-radius: 20px; border: 1px solid #e2e8f0;" id="rowCount">0 รายการ</div>
+                </div>
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>กองทุนแยกประเภท</th>
+                                <th>กองทุนย่อย</th>
+                                <th>โครงการย่อย</th>
+                                <th class="text-right">ร้อยละ</th>
+                                <th class="text-right">ชดเชย (บาท)</th>
+                                <th style="text-align: center; width: 60px;"><i class="fa-solid fa-gear"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be injected here via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer-section">
+        <i class="fa-solid fa-code" style="margin-right: 8px; opacity: 0.8;"></i> 
+        ผู้พัฒนา นางสาวนภาจรัส พรมรี นักสาธารณสุขชำนาญการ ศูนย์จัดเก็บรายได้
+    </footer>
+</div>
+
+<script>
+    // Configuration
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyJxG2PSq06YJXehBh16lbzfg35TiLDGNCt6K6Df51wb29Q5dhsFTfa6OBX6GHqg5I4aA/exec";
+    
+    // Default Data Injection (Prompt Data)
+    const rawDefaultData = `กองทุนแยกประเภท,กองทุนย่อย,โครงการย่อย,ร้อยละ,ชดเชย
+AA กองทุนค่าบริการทางการแพทย์,01 กองทุนผู้ป่วยนอก,01 OP_cap,34.24261871,"35,296,050.21"
+AA กองทุนค่าบริการทางการแพทย์,01 กองทุนผู้ป่วยนอก,01 OP_CF,0.755750284,"779,000.00"
+AA กองทุนค่าบริการทางการแพทย์,02 กองทุนผู้ป่วยใน,01 งบผู้ป่วยใน,32.3473065,"33,342,431.08"
+AA กองทุนค่าบริการทางการแพทย์,02 กองทุนผู้ป่วยใน,01 งบผู้ป่วยใน_กทม.,0.204104063,"210,383.07"
+AA กองทุนค่าบริการทางการแพทย์,02 กองทุนผู้ป่วยใน,01 IP_CF,4.582372742,"4,723,343.73"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,09 บริการทางการแพทย์ขั้นสูงสุด,0.293956786,"303,000.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,02 Instrument,1.70754452,"1,760,075.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,06 Chemo/Radia-OP&IP ,1.042470203,"1,074,540.50"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,07 รับบริการในหน่วยบริการอื่นกรณีที่มีเหตุสมควร,0.469102642,"483,534.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,02 OP-AE ข้ามจังหวัด,1.123346378,"1,157,904.73"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,01 กรณีจำเป็นต้องกำกับการใช้บริการอย่างใกล้ชิด,0.07326218,"75,516.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,04 โรคหลอดเลือดสมองตีบ(Stroke),0.570450792,"588,000.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,02 งบค่าตรวจทางห้องปฏิบัติการและชดเชยบริการ,0.462579323,"476,810.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,01 การดูแลแบบประคับประคอง (Morphine ในผู้ป่วยมะเร็งที่บ้าน),1.557340364,"1,605,250.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,10 ค่าบริการเจ็บป่วยฉุกเฉินคุณภาพ,2.270161316,"2,340,000.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,06 ค่าพาหนะส่งต่อฯ,0.126480971,"130,372.00"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,04 PUC/IPPRCC-PUC/SSS,0.158312852,"163,183.15"
+AA กองทุนค่าบริการทางการแพทย์,04 กองทุน Central Reimburse,05 หัวใจขาดเลือดเฉียบพลัน (Acute STEMI),0.155224705,"160,000.00"
+AA กองทุนค่าบริการทางการแพทย์,07 ค่าบริการฟื้นฟูสมรรถภาพด้านการแพทย์,01 ค่าบริการฟื้นฟูสมรรถภาพด้านการแพทย์,0.252337162,"260,100.00"
+AA กองทุนค่าบริการทางการแพทย์,18 งบแพทย์แผนไทย,04 ค่าบริการยาสมุนไพร,0.650583703,"670,598.10"
+AA กองทุนค่าบริการทางการแพทย์,18 งบแพทย์แผนไทย,02 ค่าบริการฝังเข็ม,0.005820926,"6,000.00"
+AB กองทุนสร้างเสริมสุขภาพและป้องกันโรค,03 กองทุนสร้างเสริมสุขภาพและป้องกันโรค,01 งบ PP สำหรับจ่ายตามจำนวนประชากรและผลงาน,10.38063164,"10,699,978.84"
+AB กองทุนสร้างเสริมสุขภาพและป้องกันโรค,03 กองทุนสร้างเสริมสุขภาพและป้องกันโรค,01 งบ PP จ่ายตามรายบริการ (Fee schedule),1.814882404,"1,870,715.00"
+AB กองทุนสร้างเสริมสุขภาพและป้องกันโรค,03 กองทุนสร้างเสริมสุขภาพและป้องกันโรค,01 PP_CF,0.161821755,"166,800.00"
+AC กองทุนเอดส์,08 กองทุนเอดส์,01 งบค่าตรวจทางห้องปฏิบัติการ,0.062332421,"64,250.00"
+AC กองทุนเอดส์,08 กองทุนเอดส์,01 งบป้องกันการติดเชื้อ HIV,0.134523551,"138,662.00"
+AD กองทุนไตเรื้อรัง,13 กองทุนไตวายเรื้อรัง,01 บริการฟอกเลือดด้วยเครื่องไตเทียม (HD),1.514663272,"1,561,260.00"
+AD กองทุนไตเรื้อรัง,13 กองทุนไตวายเรื้อรัง,01 บริการล้างผ่านทางช่องท้องด้วยเครื่องอัตโนมัติ (APD),0.060634651,"62,500.00"
+AD กองทุนไตเรื้อรัง,13 กองทุนไตวายเรื้อรัง,01 บริการล้างไตผ่านทางช่องท้องอย่างต่อเนื่อง (CAPD),0.77243694,"796,200.00"
+AE บริการควบคุมป้องกันและรักษาผู้ป่วยโรคเบาหวานและความดันโลหิตสูง,19 บริการควบคุมป้องกันและรักษาผู้ป่วยโรคเบาหวานและความดันโลหิตสูง,01 ค่าดูแลสนับสนุนผู้ป่วยเบาหวาน ชนิดที่2และความดันโลหิตสูง,0.341407038,"351,910.00"
+AE บริการควบคุมป้องกันและรักษาผู้ป่วยโรคเบาหวานและความดันโลหิตสูง,19 บริการควบคุมป้องกันและรักษาผู้ป่วยโรคเบาหวานและความดันโลหิตสูง,01 ค่าดูแลสนับสนุนผู้ป่วยเบาหวาน ชนิดที่1& GDM,0.265562307,"273,732.00"
+AH ค่าบริการสาธารณสุขเพิ่มเติมสำหรับบริการระดับปฐมภูมิ,27 ค่าบริการสาธารณสุขเพิ่มเติมสำหรับบริการระดับปฐมภูมิ,05 ค่าบริการตรวจทางห้องปฏิบัติการ,0.001940309,"2,000.00"
+AH ค่าบริการสาธารณสุขเพิ่มเติมสำหรับบริการระดับปฐมภูมิ,27 ค่าบริการสาธารณสุขเพิ่มเติมสำหรับบริการระดับปฐมภูมิ,03 ค่าบริการสาธารณสุขระบบทางไกล (Telehealth/Telemedicine),1.16525246,"1,201,100.00"
+AH ค่าบริการสาธารณสุขเพิ่มเติมสำหรับบริการระดับปฐมภูมิ,27 ค่าบริการสาธารณสุขเพิ่มเติมสำหรับบริการระดับปฐมภูมิ,02 ค่าบริหารจัดส่งยาและเวชภัณฑ์ไปยังผู้ป่วยที่บ้าน,0.013640371,"14,060.00"
+BA สวัสดิการรักษาพยาบาลของพนักงานส่วนท้องถิ่น,60 สวัสดิการรักษาพยาบาลของพนักงานส่วนท้องถิ่น,05 จ่ายเพิ่มเติมอื่นๆ อปท.,0.259143765,"267,116.00"`;
+
+    // State Variables
+    let globalData = [];
+    let filteredData = [];
+    let donutChartInst = null;
+    let barChartInst = null;
+    
+    // Register Datalabels Plugin
+    Chart.register(ChartDataLabels);
+
+    // Initial Load
+    window.onload = () => {
+        globalData = parseCSV(rawDefaultData);
+        filteredData = [...globalData];
+        initDashboard();
+        updateTimestamp(); // อัปเดตเวลาเมื่อโหลดข้อมูลเริ่มต้นเสร็จ
+        
+        // Auto fetch live data in background after showing default data
+        setTimeout(fetchLiveFromGAS, 1500); 
+    };
+
+    // Update Timestamp Function
+    function updateTimestamp() {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+        const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+        const el = document.getElementById('lastUpdateTime');
+        if (el) el.innerHTML = `<i class="fa-regular fa-clock"></i> อัปเดตล่าสุด: ${dateStr} เวลา ${timeStr} น.`;
+    }
+
+    // Parse Default CSV text
+    function parseCSV(csvText) {
+        const lines = csvText.split('\n');
+        const result = [];
+        for(let i=1; i<lines.length; i++) {
+            if(!lines[i].trim()) continue;
+            // Handle quotes in CSV for numbers like "35,296,050.21"
+            let row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+            if(row && row.length >= 5) {
+                let compStr = row[4].replace(/"/g, '').replace(/,/g, '');
+                result.push({
+                    "กองทุนแยกประเภท": row[0].replace(/"/g, ''),
+                    "กองทุนย่อย": row[1].replace(/"/g, ''),
+                    "โครงการย่อย": row[2].replace(/"/g, ''),
+                    "ร้อยละ": parseFloat(row[3]) || 0,
+                    "ชดเชย": parseFloat(compStr) || 0
+                });
+            }
+        }
+        return result;
+    }
+
+    // Initialize Dashboard components
+    function initDashboard() {
+        populateFilters();
+        updateDashboard();
+    }
+
+    function updateDashboard() {
+        updateKPIs();
+        renderTable();
+        renderDonutChart();
+        renderBarChart();
+    }
+
+    // Update KPI Cards
+    function updateKPIs() {
+        const totalComp = filteredData.reduce((sum, item) => sum + item['ชดเชย'], 0);
+        const uniqueMain = new Set(filteredData.map(item => item['กองทุนแยกประเภท'])).size;
+        const uniqueSub = new Set(filteredData.map(item => item['กองทุนย่อย'])).size;
+        const uniqueProj = new Set(filteredData.map(item => item['โครงการย่อย'])).size;
+
+        const kpiTotal = document.getElementById('kpi-total');
+        const kpiMain = document.getElementById('kpi-main-fund');
+        const kpiSub = document.getElementById('kpi-sub-fund');
+        const kpiProj = document.getElementById('kpi-project');
+        const rowCount = document.getElementById('rowCount');
+
+        if(kpiTotal) kpiTotal.textContent = new Intl.NumberFormat('th-TH').format(totalComp);
+        if(kpiMain) kpiMain.textContent = uniqueMain;
+        if(kpiSub) kpiSub.textContent = uniqueSub;
+        if(kpiProj) kpiProj.textContent = uniqueProj;
+        if(rowCount) rowCount.textContent = `${filteredData.length} รายการ`;
+    }
+
+    // Render Table
+    function renderTable() {
+        const tbody = document.querySelector('#dataTable tbody');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        
+        if (filteredData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px;">ไม่พบข้อมูล</td></tr>';
+            return;
+        }
+
+        filteredData.forEach((item) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${item['กองทุนแยกประเภท']}</td>
+                <td>${item['กองทุนย่อย']}</td>
+                <td>${item['โครงการย่อย']}</td>
+                <td class="text-right">${item['ร้อยละ'].toFixed(2)}%</td>
+                <td class="text-right" style="font-weight:500; color: var(--primary);">${new Intl.NumberFormat('th-TH', {minimumFractionDigits: 2}).format(item['ชดเชย'])}</td>
+                <td style="text-align: center;">
+                    <button class="action-btn delete" onclick="deleteRecord('${item['โครงการย่อย']}')" title="ลบข้อมูล"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Render Donut Chart
+    function renderDonutChart() {
+        const canvas = document.getElementById('donutChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        // Group by Main Fund
+        const grouped = {};
+        filteredData.forEach(item => {
+            grouped[item['กองทุนแยกประเภท']] = (grouped[item['กองทุนแยกประเภท']] || 0) + item['ชดเชย'];
+        });
+
+        // Use full label for tooltip, short label for legend
+        const fullLabels = Object.keys(grouped);
+        const shortLabels = fullLabels.map(l => l.length > 25 ? l.substring(0, 25) + '...' : l);
+        const data = Object.values(grouped);
+        
+        const colors = ['#0ea5e9', '#14b8a6', '#6366f1', '#f59e0b', '#f43f5e', '#8b5cf6', '#10b981'];
+
+        if (donutChartInst) donutChartInst.destroy();
+        
+        donutChartInst = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: fullLabels, 
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { 
+                            boxWidth: 12, 
+                            font: {family: 'Kanit', size: 12},
+                            padding: 15,
+                            generateLabels: (chart) => {
+                                const data = chart.data;
+                                return data.labels.map((label, i) => ({
+                                    text: shortLabels[i],
+                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                    index: i
+                                }));
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed !== null) {
+                                    label += new Intl.NumberFormat('th-TH').format(context.parsed) + ' บาท';
+                                }
+                                return label;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: { weight: 'bold', size: 12 },
+                        formatter: (value, ctx) => {
+                            let sum = 0;
+                            let dataArr = ctx.chart.data.datasets[0].data;
+                            dataArr.map(data => { sum += data; });
+                            let percentage = (value*100 / sum).toFixed(1)+"%";
+                            return (value*100 / sum) > 3 ? percentage : ''; // Show only if > 3%
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Render Bar Chart (Horizontal, Sorted Top 10)
+    function renderBarChart() {
+        const canvas = document.getElementById('barChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        // Group by Sub Fund
+        const grouped = {};
+        filteredData.forEach(item => {
+            grouped[item['กองทุนย่อย']] = (grouped[item['กองทุนย่อย']] || 0) + item['ชดเชย'];
+        });
+
+        // Sort Descending & Get Top 10
+        let sortedArray = Object.entries(grouped).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        
+        if (barChartInst) barChartInst.destroy();
+
+        barChartInst = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sortedArray.map(item => item[0]),
+                datasets: [{
+                    label: 'ยอดชดเชย (บาท)',
+                    data: sortedArray.map(item => item[1]),
+                    backgroundColor: 'rgba(2, 132, 199, 0.85)',
+                    hoverBackgroundColor: 'rgba(2, 132, 199, 1)',
+                    borderRadius: 4,
+                    barPercentage: 0.7
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'right',
+                        color: '#0f172a',
+                        font: { family: 'Kanit', size: 11 },
+                        formatter: (value) => new Intl.NumberFormat('th-TH', {notation: "compact", compactDisplay: "short"}).format(value)
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return new Intl.NumberFormat('th-TH').format(context.parsed.x) + ' บาท';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        display: false,
+                        grid: { display: false }
+                    },
+                    y: { 
+                        grid: { display: false },
+                        ticks: { 
+                            font: { family: 'Kanit', size: 12 }, 
+                            color: '#334155',
+                            callback: function(val, index) {
+                                let label = this.getLabelForValue(val);
+                                return label.length > 30 ? label.substring(0, 30) + '...' : label;
+                            }
+                        }
+                    }
+                },
+                layout: { padding: { right: 50 } }
+            }
+        });
+    }
+
+    // Filters Logic
+    function populateFilters() {
+        const mainSet = new Set(), subSet = new Set(), projSet = new Set();
+        globalData.forEach(d => {
+            if(d['กองทุนแยกประเภท']) mainSet.add(d['กองทุนแยกประเภท']);
+            if(d['กองทุนย่อย']) subSet.add(d['กองทุนย่อย']);
+            if(d['โครงการย่อย']) projSet.add(d['โครงการย่อย']);
+        });
+
+        fillSelect('filter-main', mainSet);
+        fillSelect('filter-sub', subSet);
+        fillSelect('filter-project', projSet);
+    }
+
+    function fillSelect(id, set) {
+        const select = document.getElementById(id);
+        if (!select) return; // Safeguard against null elements
+        
+        const currentVal = select.value || 'all';
+        select.innerHTML = '<option value="all">ทั้งหมด</option>';
+        Array.from(set).sort().forEach(val => {
+            if (!val) return;
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = val;
+            select.appendChild(opt);
+        });
+        if(Array.from(set).includes(currentVal)) select.value = currentVal;
+    }
+
+    function applyFilters() {
+        const elMain = document.getElementById('filter-main');
+        const elSub = document.getElementById('filter-sub');
+        const elProj = document.getElementById('filter-project');
+        
+        const fMain = elMain ? elMain.value : 'all';
+        const fSub = elSub ? elSub.value : 'all';
+        const fProj = elProj ? elProj.value : 'all';
+
+        filteredData = globalData.filter(d => {
+            return (fMain === 'all' || d['กองทุนแยกประเภท'] === fMain) &&
+                   (fSub === 'all' || d['กองทุนย่อย'] === fSub) &&
+                   (fProj === 'all' || d['โครงการย่อย'] === fProj);
+        });
+
+        updateDashboard();
+    }
+
+    function resetFilters() {
+        const elMain = document.getElementById('filter-main');
+        const elSub = document.getElementById('filter-sub');
+        const elProj = document.getElementById('filter-project');
+        
+        if (elMain) elMain.value = 'all';
+        if (elSub) elSub.value = 'all';
+        if (elProj) elProj.value = 'all';
+        applyFilters();
+    }
+
+    // --- Backend Communication (Google Apps Script) ---
+
+    function showLoader(text) {
+        const loaderText = document.getElementById('loaderText');
+        const loaderModal = document.getElementById('loaderModal');
+        if(loaderText) loaderText.textContent = text;
+        if(loaderModal) loaderModal.style.display = 'flex';
+    }
+
+    function hideLoader() {
+        const loaderModal = document.getElementById('loaderModal');
+        if(loaderModal) loaderModal.style.display = 'none';
+    }
+
+    function updateSyncStatus(isOnline) {
+        const dot = document.getElementById('syncDot');
+        const text = document.getElementById('syncText');
+        if (!dot || !text) return;
+
+        if(isOnline) {
+            dot.className = 'status-dot online';
+            text.textContent = 'เชื่อมต่อระบบออนไลน์แล้ว (ข้อมูลล่าสุด)';
+        } else {
+            dot.className = 'status-dot offline';
+            text.textContent = 'การเชื่อมต่อล้มเหลว (ใช้ข้อมูล Offline)';
+        }
+    }
+
+    async function fetchLiveFromGAS() {
+        showLoader('กำลังดึงข้อมูลจาก Google Sheet...');
+        try {
+            const res = await fetch(GAS_URL);
+            const json = await res.json();
+            if(json.status === 'success' && json.data.length > 0) {
+                globalData = json.data;
+                applyFilters(); // Re-apply filters with new data
+                populateFilters();
+                updateSyncStatus(true);
+                updateTimestamp(); // อัปเดตเวลาเมื่อดึงข้อมูลออนไลน์สำเร็จ
+            } else if(json.data && json.data.length === 0) {
+                 // Database is empty
+                 globalData = [];
+                 applyFilters();
+                 updateSyncStatus(true);
+                 updateTimestamp(); // อัปเดตเวลา
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            updateSyncStatus(false);
+        }
+        hideLoader();
+    }
+
+    // Excel Upload Processing
+    function handleExcelUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        showLoader('กำลังอ่านไฟล์ Excel...');
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const data = event.target.result;
+            const workbook = XLSX.read(data, { type: 'binary' });
+            // Assuming first sheet
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, {raw: true});
+
+            // Prepare data structure
+            const formattedData = jsonData.map(row => ({
+                "กองทุนแยกประเภท": row['กองทุนแยกประเภท'] || row['Category'] || "",
+                "กองทุนย่อย": row['กองทุนย่อย'] || row['SubCategory'] || "",
+                "โครงการย่อย": row['โครงการย่อย'] || row['Project'] || "",
+                "ร้อยละ": parseFloat(row['ร้อยละ']) || 0,
+                "ชดเชย": parseFloat(row['ชดเชย']) || parseFloat(row['Compensation']) || 0
+            })).filter(r => r["กองทุนแยกประเภท"] !== ""); // Filter out empty rows
+
+            if(formattedData.length > 0) {
+                sendDataToGAS(formattedData);
+            } else {
+                hideLoader();
+                alert('ไม่พบข้อมูลในไฟล์ Excel หรือรูปแบบ Column ไม่ถูกต้อง\nโปรดตรวจสอบว่า Header แถวแรกมีชื่อคอลัมน์: กองทุนแยกประเภท, กองทุนย่อย, โครงการย่อย, ร้อยละ, ชดเชย');
+            }
+        };
+        reader.readAsBinaryString(file);
+        e.target.value = ''; // Reset input
+    }
+
+    async function sendDataToGAS(newData) {
+        showLoader('กำลังตรวจสอบและอัปโหลดข้อมูลใหม่ไปยัง Google Sheet...');
+        try {
+            const res = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                body: JSON.stringify({ action: 'import', data: newData })
+            });
+            const result = await res.json();
+            if(result.status === 'success') {
+                alert(`อัปโหลดสำเร็จ! เพิ่มข้อมูลใหม่จำนวน ${result.addedCount} รายการ`);
+                fetchLiveFromGAS(); // Refresh dashboard
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("เกิดข้อผิดพลาดในการอัปโหลดข้อมูล ตรวจสอบ URL หรือสิทธิ์ของ Google Apps Script");
+            hideLoader();
+        }
+    }
+
+    // Delete Function
+    async function deleteRecord(projectName) {
+        if(!confirm(`ยืนยันการลบข้อมูลโครงการ:\n"${projectName}"\nออกจากฐานข้อมูลหรือไม่?`)) return;
+        
+        showLoader('กำลังลบข้อมูลใน Google Sheet...');
+        try {
+            const res = await fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'delete', projectName: projectName })
+            });
+            const result = await res.json();
+            if(result.status === 'success') {
+                fetchLiveFromGAS(); // Refresh dashboard
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+            hideLoader();
+        }
+    }
+
+</script>
+</body>
+</html>
